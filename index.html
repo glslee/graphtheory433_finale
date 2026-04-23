@@ -80,9 +80,7 @@
     <div class="section">
         <h2>Add Students</h2>
         <input type="text" id="studentName" placeholder="Student name">
-        <select id="courseSelect" multiple>
-            <!-- Courses will be populated here -->
-        </select>
+        <div id="courseSelect"></div>
         <button onclick="addStudent()">Add Student</button>
         <div id="studentList" class="student-list"></div>
     </div>
@@ -130,15 +128,15 @@
         }
 
         function updateCourseSelect() {
-            const select = document.getElementById('courseSelect');
-            select.innerHTML = courses.map(course =>
-                `<option value="${course.name}">${course.name}</option>`
+            const container = document.getElementById('courseSelect');
+            container.innerHTML = courses.map((course, index) =>
+                `<label style="display: block; margin: 5px 0;"><input type="checkbox" value="${course.name}" id="course-${index}"> ${course.name}</label>`
             ).join('');
         }
 
         function addStudent() {
             const name = document.getElementById('studentName').value.trim();
-            const selectedCourses = Array.from(document.getElementById('courseSelect').selectedOptions).map(opt => opt.value);
+            const selectedCourses = Array.from(document.querySelectorAll('#courseSelect input[type="checkbox"]:checked')).map(cb => cb.value);
             if (name && selectedCourses.length > 0) {
                 const student = { name, courses: selectedCourses };
                 students.push(student);
@@ -149,7 +147,7 @@
                 });
                 updateStudentList();
                 document.getElementById('studentName').value = '';
-                document.getElementById('courseSelect').selectedIndex = -1;
+                document.querySelectorAll('#courseSelect input[type="checkbox"]').forEach(cb => cb.checked = false);
             }
         }
 
