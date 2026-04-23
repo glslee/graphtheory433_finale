@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Scheduling with Graph Coloring</title>
+    <script src="https://unpkg.com/vis-network@9.1.2/dist/vis-network.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        h1, h2 {
+            color: #222;
+        }
+        .section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input, button, select {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #graph {
+            height: 400px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .course-list, .student-list {
+            margin-top: 10px;
+        }
+        .course-item, .student-item {
+            display: inline-block;
+            background-color: #e9ecef;
+            padding: 5px 10px;
+            margin: 2px;
+            border-radius: 4px;
+        }
+        .remove-btn {
+            margin-left: 10px;
+            color: red;
+            cursor: pointer;
+        }
+        #schedule {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Exam Scheduling with Graph Coloring</h1>
+    <p>This web app demonstrates graph coloring for exam scheduling. Courses are nodes in a graph, with edges connecting courses that share students (conflicts). Graph coloring assigns time slots to courses so no conflicting courses are scheduled at the same time.</p>
+
+    <div class="section">
+        <h2>Add Courses</h2>
+        <input type="text" id="courseName" placeholder="Course name">
+        <button onclick="addCourse()">Add Course</button>
+        <div id="courseList" class="course-list"></div>
+    </div>
+
+    <div class="section">
+        <h2>Add Students</h2>
+        <input type="text" id="studentName" placeholder="Student name">
+        <select id="courseSelect" multiple>
+            <!-- Courses will be populated here -->
+        </select>
+        <button onclick="addStudent()">Add Student</button>
+        <div id="studentList" class="student-list"></div>
+    </div>
+
+    <div class="section">
+        <h2>Build Graph & Color</h2>
+        <button onclick="buildGraphAndColor()">Build Graph & Color</button>
+        <div id="graph"></div>
+        <div id="schedule"></div>
+        <div id="conflicts"></div>
+        <div id="chromaticInfo"></div>
+    </div>
+
+    <script>
+        let courses = [];
+        let students = [];
+        let network = null;
+
+        function addCourse() {
+            const name = document.getElementById('courseName').value.trim();
+            if (name && !courses.find(c => c.name === name)) {
+                courses.push({ name, students: [] });
+                updateCourseList();
+                updateCourseSelect();
+                document.getElementById('courseName').value = '';
+            }
+        }
+
+        function updateCourseList() {
+            const list = document.getElementById('courseList');
+            list.innerHTML = courses.map((course, index) =>
+                `<span class="course-item">${course.name}<span class="remove-btn" onclick="removeCourse(${index})">×</span></span>`
+            ).join('');
+        }
+
+        function removeCourse(index) {
+            courses.splice(index, 1);
+            updateCourseList();
+            updateCourseSelect();
+            // Remove from students' courses
+            students.forEach(student => {
+                student.courses = student.courses.filter(c => courses.find(course => course.name === c));
+            });
+            updateStudentList();
+        }
+
+        function updateCourseSelect() {
+            const select = document.getElementById('courseSelect');
+            select.innerHTML = courses.map(course =>
+                `<option value="${course.name}">${course.name}</option>`
+            ).join('');
+        }
+
+        function addStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const selectedCourses = Array.from(document.getElementById('courseSelect').selectedOptions).map(opt => opt.value);
+            if (name && selectedCourses.length > 0) {
+                const student = { name, courses: selectedCourses };
+                students.push(student);
+                // Add student to courses (avoid duplicates)
+                selectedCourses.forEach(courseName => {
+                    const course = courses.find(c => c.name === courseName);
+                    if (course && !course.students.includes(name)) course.students.push(name);
+                });
+                updateStudentList();
+                document.getElementById('studentName').value = '';
+                document.getElementById('courseSelect').selectedIndex = -1;
+            }
+        }
+
+        function updateStudentList() {
+            const list = document.getElementById('studentList');
+            list.innerHTML = students.map((student, index) =>
+                `<div class="student-item">${student.name} (${student.courses.join(', ')})<span class="remove-btn" onclick="removeStudent(${index})">×</span></div>`
+            ).join('');
+        }
+
+        function removeStudent(index) {
+            const student = students[index];
+            // Remove from courses
+            student.courses.forEach(courseName => {
+                const course = courses.find(c => c.name === courseName);
+                if (course) course.students = course.students.filter(s => s !== student.name);
+            });
+            students.splice(index, 1);
+            updateStudentList();
+        }
+
+        function buildGraphAndColor() {
+            if (courses.length === 0) return;
+
+            // Build conflict graph
+            const nodes = [];
+            const edges = [];
+            const adjacencyList = {};
+
+            courses.forEach((course, i) => {
+                nodes.push({ id: i, label: course.name, color: '#cccccc' });
+                adjacencyList[i] = [];
+            });
+
+            for (let i = 0; i < courses.length; i++) {
+                for (let j = i + 1; j < courses.length; j++) {
+                    const shared = courses[i].students.filter(s => courses[j].students.includes(s));
+                    if (shared.length > 0) {
+                        edges.push({ from: i, to: j });
+                        adjacencyList[i].push(j);
+                        adjacencyList[j].push(i);
+                    }
+                }
+            }
+
+            // Greedy coloring with decreasing degree order
+            const degrees = Object.keys(adjacencyList).map(i => ({ index: parseInt(i), degree: adjacencyList[i].length }));
+            degrees.sort((a, b) => b.degree - a.degree);
+
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd', '#98d8c8', '#f7dc6f', '#bb8fce', '#85c1e9'];
+            const colorAssignments = new Array(courses.length).fill(-1);
+
+            degrees.forEach(({ index }) => {
+                const usedColors = new Set();
+                adjacencyList[index].forEach(neighbor => {
+                    if (colorAssignments[neighbor] !== -1) {
+                        usedColors.add(colorAssignments[neighbor]);
+                    }
+                });
+                let color = 0;
+                while (usedColors.has(color)) color++;
+                colorAssignments[index] = color;
+                nodes[index].color = colors[color % colors.length];
+            });
+
+            // Visualize
+            const container = document.getElementById('graph');
+            const data = { nodes, edges };
+            const options = {
+                nodes: {
+                    shape: 'circle',
+                    size: 30,
+                    font: { size: 16 },
+                    scaling: {
+                        min: 30,
+                        max: 30
+                    }
+                },
+                edges: {
+                    width: 4,
+                    color: '#333'
+                },
+                physics: {
+                    enabled: true
+                }
+            };
+            if (network) network.destroy();
+            network = new vis.Network(container, data, options);
+
+            // Schedule output
+            const slots = {};
+            courses.forEach((course, i) => {
+                const slot = colorAssignments[i] + 1;
+                if (!slots[slot]) slots[slot] = [];
+                slots[slot].push(course.name);
+            });
+
+            const scheduleDiv = document.getElementById('schedule');
+            scheduleDiv.innerHTML = '<h3>Exam Schedule</h3>' +
+                Object.keys(slots).sort((a,b)=>a-b).map(slot =>
+                    `<div>Time Slot ${slot}: ${slots[slot].join(', ')}</div>`
+                ).join('');
+
+            const numColors = Math.max(...colorAssignments) + 1;
+            const chromaticInfo = document.getElementById('chromaticInfo');
+            let infoText = `<p>Number of time slots used: ${numColors}</p>
+                <p>The chromatic number is the minimum number of colors needed to color the graph such that no two adjacent nodes share the same color. The greedy algorithm used here approximates this, but may not always find the optimal solution.</p>`;
+            
+            // Check for complete graph
+            const isComplete = edges.length === (courses.length * (courses.length - 1)) / 2;
+            const hasUniversalStudent = students.some(student => student.courses.length === courses.length);
+            if (isComplete && hasUniversalStudent) {
+                infoText += `<p><strong>Note:</strong> If a student is enrolled in all courses, every course conflicts with every other — this is a complete graph K${courses.length}, which requires ${courses.length} colors by definition.</p>`;
+            }
+            
+            chromaticInfo.innerHTML = infoText;
+        }
+    </script>
+</body>
+</html>
