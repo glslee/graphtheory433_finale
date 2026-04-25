@@ -1,90 +1,70 @@
 # Exam Scheduling with Graph Coloring
 
-A single-file web application demonstrating graph coloring for exam scheduling problems. This project showcases graph theory concepts in a practical application for a math class.
+A single-file web application demonstrating how graph coloring solves exam scheduling problems. Built with vanilla HTML/CSS/JavaScript and [vis.js](https://visjs.org/) for graph visualization.
 
-## The Mathematics
+## Running the App
 
-This application solves the exam scheduling problem using graph coloring:
+**No installation required.** There are two ways to open it:
 
-- **Nodes**: Each course is represented as a node in the graph
-- **Edges**: An edge connects two courses if they share at least one student (creating a conflict)
-- **Graph Coloring**: Each color represents a time slot. The goal is to assign colors (time slots) to courses such that no two adjacent courses (conflicting courses) share the same color
-- **Chromatic Number**: The minimum number of colors needed to properly color the graph
-- **Algorithm**: Greedy coloring with nodes ordered by decreasing degree (courses with most conflicts colored first)
+### Option 1 — Open the file directly (easiest)
 
-## Features
+Download or clone this repository, then open `index.html` in any modern web browser:
 
-- **Add Courses**: Input course names to create nodes in the graph
-- **Add Students**: Assign students to multiple courses to create conflicts
-- **Build Graph & Color**: Automatically constructs the conflict graph and applies greedy coloring
-- **Visualization**: Interactive graph visualization using vis.js showing colored nodes
-- **Schedule Output**: Clean display of time slots with assigned courses
-- **Educational Content**: Explanation of the chromatic number and algorithm used
-- **Dynamic Updates**: Add/remove students and courses, then re-run to see changes
+- **Mac**: double-click `index.html` in Finder, or run `open index.html` in Terminal
+- **Windows**: double-click `index.html` in File Explorer
+- **Linux**: run `xdg-open index.html` in a terminal
+
+> The graph visualization requires an internet connection on first load to fetch the vis.js library from CDN. Once it has loaded once, subsequent uses may work offline depending on your browser cache.
+
+### Option 2 — Serve locally (if Option 1 doesn't render the graph)
+
+Some browsers block CDN requests when opening files directly via `file://`. If the graph area appears blank, serve the file with a local HTTP server instead:
+
+```bash
+# Python 3
+python3 -m http.server 8080
+```
+
+Then visit `http://localhost:8080` in your browser.
 
 ## How to Use
 
-1. **Open the App**: Open `index.html` directly in any modern web browser
-2. **Add Courses**: Enter course names and click "Add Course"
-3. **Add Students**: Enter student names and select multiple courses they are enrolled in
-4. **Generate Schedule**: Click "Build Graph & Color" to see the conflict graph and computed schedule
-5. **Experiment**: Add more students or courses and re-run to observe how the graph and coloring change
+1. **Add Courses** — type a course name and click "Add Course" to create nodes in the graph
+2. **Add Students** — type a student name, check the courses they are enrolled in, and click "Add Student"
+3. **Build Graph & Color** — click the button to construct the conflict graph and compute a schedule
+4. **Read the output** — the colored graph shows which courses conflict, and the schedule below lists time slots with no conflicts
 
-## Technical Details
+You can add or remove courses and students at any time, then click "Build Graph & Color" again to update the result.
 
-- **Single File**: Everything contained in one `index.html` file
-- **No Frameworks**: Pure HTML, CSS, and JavaScript
-- **Visualization**: vis.js library loaded from CDN for graph rendering
-- **Browser Compatibility**: Works in any modern browser with JavaScript enabled
-- **Hosting**: Compatible with GitHub Pages or any static web host
+## The Mathematics
 
-## Graph Coloring Algorithm
+The app models the exam scheduling problem as a graph coloring problem:
 
-The greedy coloring algorithm works as follows:
+- **Nodes** represent courses
+- **Edges** connect two courses if they share at least one student (a conflict)
+- **Colors** represent time slots — the goal is to assign time slots so no two conflicting courses share one
+- **Chromatic number** — the minimum number of colors (time slots) needed
 
-1. Calculate the degree (number of conflicts) for each course
-2. Sort courses by decreasing degree
-3. For each course in this order:
-   - Find the smallest color not used by any conflicting course
-   - Assign that color to the course
-
-This heuristic often finds good approximations of the chromatic number but is not guaranteed to be optimal.
+The algorithm used is greedy coloring ordered by decreasing degree: courses with the most conflicts are scheduled first. This is a well-known heuristic that often finds good solutions but does not guarantee the optimal (minimum) number of time slots.
 
 ## Example
 
-Suppose we have courses: Math, Physics, Chemistry, Biology
+Courses: Math, Physics, Chemistry, Biology
 
-Students:
-- Alice: Math, Physics
-- Bob: Physics, Chemistry
-- Carol: Chemistry, Biology
-- Dave: Math, Biology
+| Student | Courses |
+|---------|---------|
+| Alice   | Math, Physics |
+| Bob     | Physics, Chemistry |
+| Carol   | Chemistry, Biology |
+| Dave    | Math, Biology |
 
-The conflict graph would have edges between:
-- Math ↔ Physics (Alice, Dave)
-- Math ↔ Biology (Dave)
-- Physics ↔ Chemistry (Bob)
-- Chemistry ↔ Biology (Carol)
+Conflict edges: Math–Physics, Math–Biology, Physics–Chemistry, Chemistry–Biology
 
-The greedy coloring might assign:
-- Time Slot 1: Physics, Biology
-- Time Slot 2: Math, Chemistry
-
-## Learning Outcomes
-
-This project demonstrates:
-- Graph representation of real-world problems
-- Conflict graph construction
-- Greedy algorithms for NP-hard problems
-- Approximation algorithms
-- Graph visualization techniques
-- Web development with vanilla JavaScript
+Greedy coloring result:
+- **Time Slot 1**: Physics, Biology
+- **Time Slot 2**: Math, Chemistry
 
 ## Requirements
 
-- Modern web browser with JavaScript enabled
-- Internet connection for vis.js CDN (works offline once loaded)
-
-## License
-
-This project is for educational purposes.
+- Any modern browser (Chrome, Firefox, Safari, Edge)
+- Internet connection on first load (for vis.js CDN)
