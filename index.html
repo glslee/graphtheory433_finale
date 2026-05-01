@@ -89,10 +89,10 @@
 
     <div class="section" id="explainer">
         <h2>What is this?</h2>
-        <p>This tool automatically builds an exam schedule so that no two exams conflict — meaning no student is ever forced to take two exams at the same time. It does this using <strong>graph coloring</strong>, a classical problem in graph theory.</p>
+        <p>This tool automatically builds an exam schedule so that no two exams conflict, meaning no student is ever forced to take two exams at the same time. It does this using <strong>graph coloring</strong>, a classical problem in graph theory.</p>
 
         <h3>The Graph Model</h3>
-        <p>Formally, a <strong>graph</strong> is a pair <em>G = (V, E)</em> where <em>V</em> is a set of <strong>vertices</strong> (nodes) and <em>E</em> is a set of <strong>edges</strong> — pairs of vertices that are connected.</p>
+        <p>Formally, a <strong>graph</strong> is a pair <em>G = (V, E)</em> where <em>V</em> is a set of <strong>vertices</strong> (nodes) and <em>E</em> is a set of <strong>edges</strong>, which are pairs of vertices that are connected.</p>
         <p>Here, we construct a <strong>conflict graph</strong>:</p>
         <ul>
             <li>Each course is a vertex: <em>V = {course₁, course₂, ...}</em></li>
@@ -105,20 +105,20 @@
         <p>The <strong>chromatic number χ(G)</strong> is the smallest <em>k</em> for which a proper k-coloring exists. This is exactly the minimum number of exam time slots needed.</p>
         <p>Two important bounds on χ(G):</p>
         <ul>
-            <li><strong>Lower bound — clique number ω(G):</strong> A <em>clique</em> is a set of vertices that are all mutually connected. Every vertex in a clique must get a distinct color, so <em>χ(G) ≥ ω(G)</em>. In scheduling terms: if 3 courses all share students with each other, you need at least 3 time slots.</li>
-            <li><strong>Upper bound — maximum degree Δ(G):</strong> Brooks' Theorem states that for any connected graph that is not a complete graph or odd cycle, <em>χ(G) ≤ Δ(G)</em>, where Δ(G) is the highest degree (number of edges) of any vertex. The greedy algorithm always stays within this bound.</li>
+            <li><strong>Lower bound (clique number ω(G)):</strong> A <em>clique</em> is a set of vertices that are all mutually connected. Every vertex in a clique must get a distinct color, so <em>χ(G) ≥ ω(G)</em>. In scheduling terms: if 3 courses all share students with each other, you need at least 3 time slots.</li>
+            <li><strong>Upper bound (maximum degree Δ(G)):</strong> Brooks' Theorem states that for any connected graph that is not a complete graph or odd cycle, <em>χ(G) ≤ Δ(G)</em>, where Δ(G) is the highest degree (number of edges) of any vertex. The greedy algorithm always stays within this bound.</li>
         </ul>
 
-        <h3>The Greedy Algorithm (Welsh–Powell)</h3>
-        <p>Computing the exact chromatic number is <strong>NP-hard</strong> — no efficient algorithm is known for the general case. Instead, this app uses a greedy heuristic:</p>
+        <h3>The Greedy Algorithm</h3>
+        <p>Computing the exact chromatic number is <strong>NP-hard</strong>, meaning no efficient algorithm is known for the general case. Instead, this app uses a greedy heuristic:</p>
         <ol>
             <li>Sort all vertices by <strong>decreasing degree</strong> (courses with the most conflicts go first).</li>
             <li>For each vertex in that order, assign the <strong>smallest-numbered color</strong> not already used by any of its neighbors.</li>
         </ol>
-        <p>This is the <strong>Welsh–Powell algorithm</strong>. It runs in <em>O(V² + E)</em> time and often achieves or is close to χ(G), but it is not guaranteed to be optimal. The ordering by degree is the key insight — high-degree vertices are the hardest to color, so placing them first gives the algorithm more flexibility.</p>
+        <p>It runs in <em>O(V² + E)</em> time and often achieves or is close to χ(G), but it is not guaranteed to be optimal. The ordering by degree is the key insight: high-degree vertices are the hardest to color, so placing them first gives the algorithm more flexibility.</p>
 
         <h3>Special Case: Complete Graphs</h3>
-        <p>If one student is enrolled in every course, every pair of courses conflicts, forming a <strong>complete graph K<sub>n</sub></strong> (where <em>n</em> is the number of courses). In K<sub>n</sub>, every vertex is adjacent to every other, so <em>χ(K<sub>n</sub>) = n</em> — you need as many time slots as there are courses, and no compression is possible.</p>
+        <p>If one student is enrolled in every course, every pair of courses conflicts, forming a <strong>complete graph K<sub>n</sub></strong> (where <em>n</em> is the number of courses). In K<sub>n</sub>, every vertex is adjacent to every other, so <em>χ(K<sub>n</sub>) = n</em>: you need as many time slots as there are courses, and no compression is possible.</p>
     </div>
 
     <div class="section">
