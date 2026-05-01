@@ -64,11 +64,32 @@
             padding: 10px;
             border-radius: 4px;
         }
+        #explainer {
+            border-left: 4px solid #007bff;
+            background-color: #f0f6ff;
+        }
+        #explainer ol {
+            padding-left: 20px;
+        }
+        #explainer li {
+            margin-bottom: 8px;
+        }
     </style>
 </head>
 <body>
     <h1>Exam Scheduling with Graph Coloring</h1>
-    <p>This web app demonstrates graph coloring for exam scheduling. Courses are nodes in a graph, with edges connecting courses that share students (conflicts). Graph coloring assigns time slots to courses so no conflicting courses are scheduled at the same time.</p>
+
+    <div class="section" id="explainer">
+        <h2>What is this?</h2>
+        <p>This tool automatically builds an exam schedule so that no two exams conflict — meaning no student is ever forced to take two exams at the same time.</p>
+        <p>It does this using a concept from mathematics called <strong>graph coloring</strong>. Here's the idea:</p>
+        <ol>
+            <li><strong>Model courses as a graph.</strong> Each course becomes a <em>node</em> (circle) in the graph. If two courses share even one student, they cannot be scheduled at the same time, so we draw an <em>edge</em> (line) between them. This is called a <em>conflict graph</em>.</li>
+            <li><strong>Color the graph.</strong> Assign a color to each node such that no two connected nodes share the same color. Each color represents a time slot. Because connected nodes have different colors, no two conflicting courses end up in the same slot.</li>
+            <li><strong>Use as few colors (time slots) as possible.</strong> The minimum number of colors needed to color a graph without conflicts is called its <em>chromatic number</em> — and that's the minimum number of exam slots required.</li>
+        </ol>
+        <p><strong>The algorithm:</strong> Finding the true chromatic number is computationally hard (NP-hard), so this app uses a fast <em>greedy approximation</em>: courses with the most conflicts are assigned a time slot first, and each course is given the lowest-numbered slot not already used by a conflicting course. This often finds the optimal solution but isn't guaranteed to.</p>
+    </div>
 
     <div class="section">
         <h2>Add Courses</h2>
