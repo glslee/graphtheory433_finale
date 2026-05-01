@@ -2,30 +2,25 @@
 
 A single-file web application demonstrating how graph coloring solves exam scheduling problems. Built with vanilla HTML/CSS/JavaScript and [vis.js](https://visjs.org/) for graph visualization.
 
-## Running the App
+## Live Demo
 
-**No installation required.** There are two ways to open it:
+**[https://graphtheory433-finale.vercel.app](https://graphtheory433-finale.vercel.app)**
 
-### Option 1 — Open the file directly (easiest)
+No installation needed — just open the link in any modern browser.
 
-Download or clone this repository, then open `index.html` in any modern web browser:
+## Running Locally
+
+If you want to run it from source, download or clone this repository and open `index.html` in any modern web browser:
 
 - **Mac**: double-click `index.html` in Finder, or run `open index.html` in Terminal
 - **Windows**: double-click `index.html` in File Explorer
 - **Linux**: run `xdg-open index.html` in a terminal
 
-> The graph visualization requires an internet connection on first load to fetch the vis.js library from CDN. Once it has loaded once, subsequent uses may work offline depending on your browser cache.
-
-### Option 2 — Serve locally (if Option 1 doesn't render the graph)
-
-Some browsers block CDN requests when opening files directly via `file://`. If the graph area appears blank, serve the file with a local HTTP server instead:
-
-```bash
-# Python 3
-python3 -m http.server 8080
-```
-
-Then visit `http://localhost:8080` in your browser.
+> If the graph area appears blank, your browser may be blocking CDN requests over `file://`. Fix it by serving locally:
+> ```bash
+> python3 -m http.server 8080
+> ```
+> Then visit `http://localhost:8080`.
 
 ## How to Use
 
