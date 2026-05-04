@@ -90,14 +90,14 @@
     <div class="section" id="explainer">
         <h2>What is this?</h2>
         <p>Ever had two exams at the same time? That's a scheduling conflict, and it's exactly the kind of problem this tool solves. You tell it which students are in which courses, and it figures out a valid exam schedule where no student ever has to be in two places at once.</p>
-        <p>The cool part is <em>how</em> it does it. Rather than brute-forcing every possible schedule, it models the problem as a graph and uses a technique called <strong>graph coloring</strong> to find a solution efficiently. Each color becomes a time slot, and the math guarantees no two conflicting courses end up in the same one.</p>
+        <p>The cool part is how it does it. Rather than brute-forcing every possible schedule, it models the problem as a graph and uses a technique called graph coloring to find a solution efficiently. Each color becomes a time slot, and the math guarantees no two conflicting courses end up in the same one.</p>
 
         <h2>How to use it</h2>
         <ol>
-            <li><strong>Add your courses.</strong> Type a course name in the "Add Courses" box and click "Add Course." Repeat for each course you want to schedule.</li>
-            <li><strong>Add your students.</strong> Type a student's name, check off every course they're enrolled in, then click "Add Student." Each student you add creates potential conflicts between their courses.</li>
-            <li><strong>Build the schedule.</strong> Click "Build Graph &amp; Color." The app draws the conflict graph (courses as circles, conflicts as lines) and outputs a schedule below it with courses grouped into time slots.</li>
-            <li><strong>Experiment.</strong> Try adding a student enrolled in every course and see what happens to the graph. Try removing students and watch conflicts disappear. The graph updates every time you click the button.</li>
+            <li>Add your courses. Type a course name in the "Add Courses" box and click "Add Course." Repeat for each course you want to schedule.</li>
+            <li>Add your students. Type a student's name, check off every course they're enrolled in, then click "Add Student." Each student you add creates potential conflicts between their courses.</li>
+            <li>Build the schedule. Click "Build Graph & Color." The app draws the conflict graph (courses as circles, conflicts as lines) and outputs a schedule below it with courses grouped into time slots.</li>
+            <li>Experiment. Try adding a student enrolled in every course and see what happens to the graph. Try removing students and watch conflicts disappear. The graph updates every time you click the button.</li>
         </ol>
 
         <h3>The Graph Model</h3>
